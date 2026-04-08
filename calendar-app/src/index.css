@@ -1,0 +1,482 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ─── */
+:root {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
+  --calendar-bg: #ffffff;
+  --calendar-shadow: 0 25px 80px rgba(0, 0, 0, 0.35), 0 8px 30px rgba(0, 0, 0, 0.15);
+  --paper-texture: linear-gradient(135deg, rgba(0,0,0,0.01) 25%, transparent 25%),
+                   linear-gradient(225deg, rgba(0,0,0,0.01) 25%, transparent 25%),
+                   linear-gradient(45deg, rgba(0,0,0,0.01) 25%, transparent 25%),
+                   linear-gradient(315deg, rgba(0,0,0,0.01) 25%, transparent 25%);
+  --accent-blue: #1a8fd1;
+  --accent-blue-light: #e8f4fd;
+  --weekend-color: #1a8fd1;
+  --today-bg: #1a8fd1;
+  --selected-bg: #1a8fd1;
+  --note-dot: #10b981;
+}
+
+/* ─── Base Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: linear-gradient(165deg, #e8ecf1 0%, #d1d5db 50%, #c5cad2 100%);
+  color: #1e293b;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.3); border-radius: 9999px; }
+
+/* ─── Ken Burns Animation ─── */
+@keyframes kenBurns {
+  0%   { transform: scale(1) translate(0, 0); }
+  33%  { transform: scale(1.05) translate(-0.3%, -0.3%); }
+  66%  { transform: scale(1.03) translate(0.2%, 0.2%); }
+  100% { transform: scale(1) translate(0, 0); }
+}
+
+/* ─── Note dot pulse ─── */
+@keyframes notePulse {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+  50% { transform: translateX(-50%) scale(1.4); opacity: 0.6; }
+}
+
+.note-pulse {
+  animation: notePulse 2.5s ease-in-out infinite;
+}
+
+/* ─── Spiral ring animation ─── */
+@keyframes spiralShine {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+/* ─── The Wall Calendar Container ─── */
+.wall-calendar {
+  width: 100%;
+  max-width: 520px;
+  background: var(--calendar-bg);
+  box-shadow: var(--calendar-shadow);
+  border-radius: 8px;
+  position: relative;
+  overflow: visible;
+}
+
+@media (min-width: 768px) {
+  .wall-calendar {
+    max-width: 580px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wall-calendar {
+    max-width: 640px;
+  }
+}
+
+/* ─── Spiral Binding ─── */
+.spiral-binding {
+  position: relative;
+  height: 32px;
+  background: linear-gradient(180deg, #e2e2e2 0%, #f0f0f0 30%, #d0d0d0 100%);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 24px;
+  z-index: 10;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.spiral-binding::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.3) 0%, transparent 20%, transparent 80%, rgba(255,255,255,0.3) 100%);
+}
+
+.spiral-ring {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid #888;
+  background: linear-gradient(145deg, #d4d4d4 0%, #a8a8a8 50%, #999 100%);
+  box-shadow: 
+    inset 0 1px 2px rgba(255,255,255,0.5),
+    0 1px 3px rgba(0,0,0,0.2);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.spiral-ring::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  width: 5px;
+  height: 3px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+}
+
+/* ─── Hanging Hook ─── */
+.hanging-hook {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.hanging-hook svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
+/* ─── Hero Image Section ─── */
+.hero-section {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #1e293b;
+}
+
+/* ─── Month Badge Overlay ─── */
+.month-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 5;
+}
+
+.month-badge-shape {
+  position: relative;
+  padding: 16px 28px 20px 40px;
+  background: var(--accent-blue);
+  clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%);
+  color: white;
+  min-width: 160px;
+}
+
+.month-badge-shape::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: 0;
+  width: 100%;
+  height: 30px;
+  background: var(--accent-blue);
+  clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
+  opacity: 0.5;
+}
+
+/* ─── Calendar Body ─── */
+.calendar-body {
+  padding: 20px 24px 24px;
+  background: var(--calendar-bg);
+  background-image: var(--paper-texture);
+  background-size: 20px 20px;
+  position: relative;
+  border-radius: 0 0 8px 8px;
+}
+
+/* ─── Notes Section ─── */
+.notes-section {
+  border-right: 1px solid #e2e8f0;
+  padding-right: 16px;
+}
+
+.notes-line {
+  border-bottom: 1px solid #e2e8f0;
+  height: 28px;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 3px;
+}
+
+/* ─── Day Grid ─── */
+.day-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 0;
+  color: #64748b;
+}
+
+.day-header.weekend {
+  color: var(--weekend-color);
+  font-weight: 800;
+}
+
+.day-cell {
+  text-align: center;
+  padding: 7px 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  position: relative;
+  user-select: none;
+}
+
+.day-cell:hover:not(.disabled):not(.other-month) {
+  background: var(--accent-blue-light);
+  transform: scale(1.08);
+}
+
+.day-cell.other-month {
+  color: #cbd5e1;
+  cursor: default;
+}
+
+.day-cell.weekend:not(.other-month) {
+  color: var(--weekend-color);
+  font-weight: 700;
+}
+
+.day-cell.today {
+  background: var(--today-bg);
+  color: white;
+  font-weight: 800;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(26, 143, 209, 0.35);
+}
+
+.day-cell.selected {
+  background: var(--selected-bg);
+  color: white;
+  font-weight: 700;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(26, 143, 209, 0.3);
+}
+
+.day-cell.range-start {
+  background: var(--selected-bg);
+  color: white;
+  font-weight: 700;
+  border-radius: 6px 0 0 6px;
+}
+
+.day-cell.range-end {
+  background: var(--selected-bg);
+  color: white;
+  font-weight: 700;
+  border-radius: 0 6px 6px 0;
+}
+
+.day-cell.in-range {
+  background: var(--accent-blue-light);
+  color: var(--accent-blue);
+  font-weight: 600;
+  border-radius: 0;
+}
+
+.day-cell.single-select {
+  background: var(--selected-bg);
+  color: white;
+  font-weight: 700;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(26, 143, 209, 0.3);
+}
+
+/* ─── Grid lines ─── */
+.grid-line-h {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: rgba(26, 143, 209, 0.2);
+  color: inherit;
+}
+
+/* ─── Focus visible ─── */
+*:focus-visible {
+  outline: 2px solid rgba(26, 143, 209, 0.5);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Tooltip ─── */
+.tooltip { position: relative; }
+.tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.92);
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: normal;
+  max-width: 180px;
+  word-break: break-word;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 60;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* ─── Notes Panel Glass ─── */
+.notes-panel-glass {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+}
+
+/* ─── Page curl effect ─── */
+.wall-calendar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.04) 50%);
+  border-radius: 0 0 8px 0;
+  pointer-events: none;
+}
+
+/* ─── Navigation buttons ─── */
+.nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-btn:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-color: #cbd5e1;
+  transform: scale(1.05);
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+/* ─── Print button ─── */
+.print-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--accent-blue);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.print-btn:hover {
+  background: #1580bd;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26, 143, 209, 0.3);
+}
+
+/* ─── Decorative geometric shape ─── */
+.geo-accent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.geo-accent::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--accent-blue);
+  clip-path: polygon(0% 100%, 0% 40%, 60% 100%);
+  opacity: 0.12;
+}
+
+/* ─── Month transition ─── */
+.month-slide-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.month-slide-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.3s ease;
+}
+
+/* ─── Print Styles ─── */
+@media print {
+  body {
+    background: white !important;
+  }
+  #root {
+    padding: 0 !important;
+  }
+  .wall-calendar {
+    box-shadow: none !important;
+    max-width: 100% !important;
+  }
+  .spiral-binding, .hanging-hook {
+    display: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
