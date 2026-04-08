@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MONTH_IMAGES, MONTH_NAMES, MONTH_ACCENTS } from '../utils/constants';
+import tufLogo from '../images/tuf_img.png';
 
 /**
  * HeroImage — Large photo section at top of the wall calendar.
@@ -54,6 +55,13 @@ export default function HeroImage({ month, year }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
         </motion.div>
       </AnimatePresence>
+
+      {/* Branded Logo Overlay (Top Left) */}
+      <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
+        <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md p-1.5 border border-white/20 shadow-xl overflow-hidden">
+          <img src={tufLogo} alt="Takeuforward Logo" className="w-full h-full object-contain" />
+        </div>
+      </div>
 
       {/* Geometric Month Badge — like the reference image */}
       <div className="month-badge">
