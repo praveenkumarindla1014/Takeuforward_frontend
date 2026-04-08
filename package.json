@@ -4,9 +4,11 @@
   "private": true,
   "description": "Interactive Wall Calendar — Takeuforward Frontend",
   "scripts": {
-    "install:app": "cd calendar-app && npm install",
     "build": "cd calendar-app && npm install && npm run build",
-    "start": "npx serve calendar-app/dist -s -l $PORT"
+    "start": "npx -y serve calendar-app/dist -s -l ${PORT:-3000}"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
   },
   "engines": {
     "node": ">=18"
