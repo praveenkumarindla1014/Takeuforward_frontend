@@ -39,24 +39,18 @@ export function useCalendar() {
   };
 
   const goToPrevMonth = () => {
-    setCurrentMonth((m) => {
-      if (m === 0) {
-        setCurrentYear((y) => y - 1);
-        return 11;
-      }
-      return m - 1;
-    });
+    const newMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const newYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    setCurrentMonth(newMonth);
+    setCurrentYear(newYear);
     resetSelection();
   };
 
   const goToNextMonth = () => {
-    setCurrentMonth((m) => {
-      if (m === 11) {
-        setCurrentYear((y) => y + 1);
-        return 0;
-      }
-      return m + 1;
-    });
+    const newMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+    const newYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+    setCurrentMonth(newMonth);
+    setCurrentYear(newYear);
     resetSelection();
   };
 
